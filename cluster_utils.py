@@ -13,7 +13,6 @@ import numpy as np
 import H99Potential as Potential
 import matplotlib
 import matplotlib.pyplot as plt
-import trattcode as tc
 from vaex.ml import MinMaxScaler
 from scipy.cluster.hierarchy import linkage
 from tqdm.notebook import tqdm
@@ -45,13 +44,10 @@ def get_artificial_dataset(ds):
     _vz_scrambled = vz_scrambled+7.25
     vtoomre = np.sqrt(ds._vx**2 + (_vy_scrambled-232)**2 + _vz_scrambled**2)
     
-    En_circ, Lz_circ = tc.calc_tratt()
-    circ = tc.calc_circ(ds.count(), En_art, En_circ, -Lz_art, Lz_circ)
-    
     vtoomre= np.sqrt(ds._vx.values**2 + (_vy_scrambled-232)**2 + _vz_scrambled**2)
     df_art = vaex.from_arrays(vx=ds.vx.values, vy=vy_scrambled, vz=vz_scrambled, 
                               En=En_art, Lz=-Lz_art, Ltotal=Ltotal_art, Lperp=Lperp_art,
-                              circ=-circ, vtoomre=vtoomre)
+                              vtoomre=vtoomre)
     
     df_art=df_art[(df_art.vtoomre>210) & (df_art.En<0)]
     
@@ -287,7 +283,7 @@ def select_maxsig_clusters_from_tree(stats, minimum_significance=3):
 
 ###########################################################################################################
 
-def count_stars(df, df_artificial, stats, Z):
+def count_stars(df, df_artificial, stats, Z, min_members, max_members, features, n_std, N_datasets):
     '''
     The function applies PCA to each candidate cluster C included in the linkage matrix Z.
     We then define an ellipsoidal boundary around C, where the axes lengths of the ellipsoid 
@@ -318,7 +314,7 @@ def count_stars(df, df_artificial, stats, Z):
     for i in tqdm(stats.i.values):
         
         #get a list of members (indices in our halo set) of the cluster C we are currently investigating
-        members = cluster_utils.get_members(i, Z)
+        members = get_members(i, Z)
 
         #ignore these clusters, return placeholder (done for computational efficiency)
         if((len(members)>max_members) or (len(members)<min_members)):
@@ -334,7 +330,7 @@ def count_stars(df, df_artificial, stats, Z):
         pca.fit(df_members)
 
         [[En_lower, En_upper], [Lperp_lower, Lperp_upper], [Lz_lower, Lz_upper]] = \
-        df_members.minmax(['scaled_En', 'scaled_Lperp', 'scaled_Lz'])
+        df_members.minmax(features)
 
         eps = 0.05 #large enough such that ellipse fits within
 
@@ -345,9 +341,6 @@ def count_stars(df, df_artificial, stats, Z):
 
         #Map the stars in the artificial data set to the PCA-space defined by C
         region = pca.transform(region)
-
-        #calculate the length of the axis in each dimension of the 3D-ellipsoid
-        n_std = N_sigma_ellipse_axis
 
         r0 = n_std*np.sqrt(pca.eigen_values_[0])
         r1 = n_std*np.sqrt(pca.eigen_values_[1])

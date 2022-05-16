@@ -82,7 +82,7 @@ def plot_IOM_subspaces_3D(df, minsig=3, savepath=None):
                [[-4.5, 4.6], [-0.03, 3.55]],
                [[-0.03, 3.55], [-17.3, 0.7]]]
 
-    fig, axs = plt.subplots(1,3, figsize = [13, 4])
+    fig, axs = plt.subplots(1,3, figsize = [13, 3.5])
     
     df_minsig = df[(df.labels>0) & (df.significance>minsig)]
     
@@ -90,9 +90,9 @@ def plot_IOM_subspaces_3D(df, minsig=3, savepath=None):
    
     for i in range(3):
         plt.sca(axs[i])
-        df.scatter(x_axis[i], y_axis[i], s=0.5, c='lightgrey', alpha=0.1, length_limit=60000)
-        df_minsig.scatter(x_axis[i], y_axis[i], s=2, c=df_minsig.labels.values,
-                                cmap=cmap, norm=norm, alpha=0.6)
+        df.scatter(x_axis[i], y_axis[i], s=1, c='lightgrey', alpha=0.4, length_limit=60000)
+        df_minsig.scatter(x_axis[i], y_axis[i], s=3, c=df_minsig.labels.values,
+                                cmap=cmap, norm=norm, alpha=0.8)
         
         plt.xlim(limits[i][0])
         plt.ylim(limits[i][1])
@@ -122,7 +122,7 @@ def plot_v_subspaces(df, minsig=3, savepath=None):
     xlabels = ['$v_R$ [km/s]', '$v_R$ [km/s]', '$v_{z}$ [km/s]']
     ylabels = ['$v_{\phi}$ [km/s]', '$v_z$ [km/s]', '$v_{\phi}$ [km/s]']
     
-    fig, axs = plt.subplots(1,3, figsize = [14, 4]) #figsize = [20,9]
+    fig, axs = plt.subplots(1,3, figsize = [13, 3.5])
     
     unique_labels = np.unique(df.labels.values)
     
@@ -135,8 +135,8 @@ def plot_v_subspaces(df, minsig=3, savepath=None):
         plt.sca(axs[i])
         plt.xlim([-570, 570])
         plt.ylim([-570, 570])
-        background.scatter(x_axis[i], y_axis[i], s=0.5, c='lightgrey', alpha=0.1, length_limit=60000)
-        df_minsig.scatter(x_axis[i], y_axis[i], s=2, c=df_minsig.labels.values,
+        background.scatter(x_axis[i], y_axis[i], s=1, c='lightgrey', alpha=0.3, length_limit=60000)
+        df_minsig.scatter(x_axis[i], y_axis[i], s=3, c=df_minsig.labels.values,
                                 cmap=cmap, norm=norm, alpha=0.8)
         
         plt.xlabel(xlabels[i])
@@ -224,10 +224,10 @@ def plot_subgroup_vspace_En_Lz(df, clusterNr, savepath=None):
         axs[i].set_xlim(-400, 400)
         axs[i].set_ylim(-400, 400)
             
-        df.scatter(x_axis[i], y_axis[i], s=0.5, c='lightgrey', alpha=0.1, length_limit=60000)
+        df.scatter(x_axis[i], y_axis[i], s=1, c='lightgrey', alpha=0.3, length_limit=60000)
         cluster[cluster.v_space_labels==0].scatter(x_axis[i], y_axis[i], s=7, color="none",
-                                                   edgecolor="black", linewidth=0.5, alpha=0.5)
-        cluster[cluster.v_space_labels>0].scatter(x_axis[i], y_axis[i], s=7, c=cluster_colors, alpha=0.7)
+                                                   edgecolor="black", linewidth=0.5, alpha=0.6)
+        cluster[cluster.v_space_labels>0].scatter(x_axis[i], y_axis[i], s=7, c=cluster_colors, alpha=0.8)
         plt.xlabel(xlabels[i])
         plt.ylabel(ylabels[i])
     
@@ -235,11 +235,11 @@ def plot_subgroup_vspace_En_Lz(df, clusterNr, savepath=None):
     axs[3].set_xlim(-3.2, 3.2)
     axs[3].set_ylim(-1.7, -0.6)
         
-    df.scatter('Lz/10e2', 'En/10e4', s=0.5, c='lightgrey', alpha=0.1, length_limit=60000)
+    df.scatter('Lz/10e2', 'En/10e4', s=1, c='lightgrey', alpha=0.3, length_limit=60000)
     cluster[cluster.v_space_labels==0].scatter('Lz/10e2', 'En/10e4', s=7, color="none",
-                                               edgecolor="black", linewidth=0.5, alpha=0.5)
+                                               edgecolor="black", linewidth=0.5, alpha=0.6)
     cluster[cluster.v_space_labels>0].scatter('Lz/10e2', 'En/10e4', s=7, c=cluster_colors,
-                                              alpha=0.7, label=f'{clusterNr}')
+                                              alpha=0.8, label=f'{clusterNr}')
     
     plt.xlabel('$L_z$ [$10^3$ kpc km/s]')
     plt.ylabel('$E$ [$10^5$ km$^2$/s$^2$]')

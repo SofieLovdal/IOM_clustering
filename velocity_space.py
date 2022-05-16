@@ -41,7 +41,7 @@ def apply_HDBSCAN_vspace(df):
     #Loop over clusters and apply HDBSCAN separately to each one of them.
     for i in range(1, int(max(np.unique(df['labels'].values)+1))): 
 
-        stars = df[df[labelcol]==i]
+        stars = df[df['labels']==i]
         N_members = stars.count()
 
         X = stars['vR', 'vphi', 'vz'].values
@@ -64,10 +64,8 @@ def apply_HDBSCAN_vspace(df):
     v_space_labels = v_space_labels + 1
     v_space_labels = np.nan_to_num(v_space_labels)
     
-    if('substructure' in labelcol):
-        df['v_space_labels_substructure'] = v_space_labels.astype(int)
-    else:
-        df['v_space_labels'] = v_space_labels.astype(int)
+
+    df['v_space_labels'] = v_space_labels.astype(int)
         
     return df
 
