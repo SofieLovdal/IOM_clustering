@@ -129,8 +129,9 @@ dmypy.json
 .pyre/
 
 # Data files
-.hdf5
+*.hdf5
 .csv
+!data/gaia_example_vtoomre180.hdf5
 
 # Figures
 .png
