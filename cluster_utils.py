@@ -316,66 +316,67 @@ def count_stars(df, df_artificial, stats, Z, min_members, max_members, features,
         #get a list of members (indices in our halo set) of the cluster C we are currently investigating
         members = get_members(i, Z)
 
-        #ignore these clusters, return placeholder (done for computational efficiency)
+        #ignore these clusters, return placeholder
         if((len(members)>max_members) or (len(members)<min_members)):
             art_region_count[i] = len(members)
             art_region_count_std[i] = 1
             real_region_count[i] = 1
-
-        #Get a dataframe containing the members
-        df_members = df.take(np.array(members))
-
-        #Fit a PCA-object according to the members of cluster C
-        pca = vaex.ml.PCA(features=features, n_components=len(features))
-        pca.fit(df_members)
-
-        [[En_lower, En_upper], [Lperp_lower, Lperp_upper], [Lz_lower, Lz_upper]] = \
-        df_members.minmax(features)
-
-        eps = 0.05 #large enough such that ellipse fits within
-
-        #Extract neighborhood of C, so that we do not have to PCA-map the full artificial dataset  
-        region = df_artificial[(df_artificial.scaled_En>En_lower-eps) & (df_artificial.scaled_En<En_upper+eps) & 
-                      (df_artificial.scaled_Lperp>Lperp_lower-eps) & (df_artificial.scaled_Lperp<Lperp_upper+eps) &
-                      (df_artificial.scaled_Lz>Lz_lower-eps) & (df_artificial.scaled_Lz<Lz_upper+eps)]
-
-        #Map the stars in the artificial data set to the PCA-space defined by C
-        region = pca.transform(region)
-
-        r0 = n_std*np.sqrt(pca.eigen_values_[0])
-        r1 = n_std*np.sqrt(pca.eigen_values_[1])
-        r2 = n_std*np.sqrt(pca.eigen_values_[2])
-
-        #Extract the artificial halo stars that reside within the ellipsoid
-        within_region = region[((np.power(region.PCA_0, 2))/(np.power(r0, 2)) + 
-                               (np.power(region.PCA_1, 2))/(np.power(r1, 2)) +
-                               (np.power(region.PCA_2, 2))/(np.power(r2, 2)))<=1]
-
-        #Average count and standard deviation in this region.
-        #Vaex takes limits as non-inclusive in count(), so we add a small value to the default minmax limits
-        region_count = within_region.count()/N_datasets
-        counts_per_halo = within_region.count(binby="index", limits=[-0.01, N_datasets-0.99], shape=N_datasets)
-        region_count_std = np.std(counts_per_halo)
         
-        art_region_count[i] = region_count
-        art_region_count_std[i] = region_count_std
-        
-        '''Extract the same value for the real data set'''
-        #Extract neighborhood of C, so that we do not have to PCA-map the full artificial dataset  
-        region = df[(df.scaled_En>En_lower-eps) & (df.scaled_En<En_upper+eps) & 
-                    (df.scaled_Lperp>Lperp_lower-eps) & (df.scaled_Lperp<Lperp_upper+eps) &
-                    (df.scaled_Lz>Lz_lower-eps) & (df.scaled_Lz<Lz_upper+eps)]
+        else:
+            #Get a dataframe containing the members
+            df_members = df.take(np.array(members))
 
-        #Map the stars in the artificial data set to the PCA-space defined by C
-        region = pca.transform(region)
+            #Fit a PCA-object according to the members of cluster C
+            pca = vaex.ml.PCA(features=features, n_components=len(features))
+            pca.fit(df_members)
 
-        #Extract the artificial halo stars that reside within the ellipsoid
-        within_region = region[((np.power(region.PCA_0, 2))/(np.power(r0, 2)) + 
-                               (np.power(region.PCA_1, 2))/(np.power(r1, 2)) +
-                               (np.power(region.PCA_2, 2))/(np.power(r2, 2)))<=1]
+            [[En_lower, En_upper], [Lperp_lower, Lperp_upper], [Lz_lower, Lz_upper]] = \
+            df_members.minmax(features)
 
-        region_count = within_region.count()
-        real_region_count[i] = region_count
+            eps = 0.05 #large enough such that ellipse fits within
+
+            #Extract neighborhood of C, so that we do not have to PCA-map the full artificial dataset  
+            region = df_artificial[(df_artificial.scaled_En>En_lower-eps) & (df_artificial.scaled_En<En_upper+eps) & 
+                          (df_artificial.scaled_Lperp>Lperp_lower-eps) & (df_artificial.scaled_Lperp<Lperp_upper+eps) &
+                          (df_artificial.scaled_Lz>Lz_lower-eps) & (df_artificial.scaled_Lz<Lz_upper+eps)]
+
+            #Map the stars in the artificial data set to the PCA-space defined by C
+            region = pca.transform(region)
+
+            r0 = n_std*np.sqrt(pca.eigen_values_[0])
+            r1 = n_std*np.sqrt(pca.eigen_values_[1])
+            r2 = n_std*np.sqrt(pca.eigen_values_[2])
+
+            #Extract the artificial halo stars that reside within the ellipsoid
+            within_region = region[((np.power(region.PCA_0, 2))/(np.power(r0, 2)) + 
+                                   (np.power(region.PCA_1, 2))/(np.power(r1, 2)) +
+                                   (np.power(region.PCA_2, 2))/(np.power(r2, 2)))<=1]
+
+            #Average count and standard deviation in this region.
+            #Vaex takes limits as non-inclusive in count(), so we add a small value to the default minmax limits
+            region_count = within_region.count()/N_datasets
+            counts_per_halo = within_region.count(binby="index", limits=[-0.01, N_datasets-0.99], shape=N_datasets)
+            region_count_std = np.std(counts_per_halo)
+
+            art_region_count[i] = region_count
+            art_region_count_std[i] = region_count_std
+
+            '''Extract the same value for the real data set'''
+            #Extract neighborhood of C, so that we do not have to PCA-map the full artificial dataset  
+            region = df[(df.scaled_En>En_lower-eps) & (df.scaled_En<En_upper+eps) & 
+                        (df.scaled_Lperp>Lperp_lower-eps) & (df.scaled_Lperp<Lperp_upper+eps) &
+                        (df.scaled_Lz>Lz_lower-eps) & (df.scaled_Lz<Lz_upper+eps)]
+
+            #Map the stars in the artificial data set to the PCA-space defined by C
+            region = pca.transform(region)
+
+            #Extract the artificial halo stars that reside within the ellipsoid
+            within_region = region[((np.power(region.PCA_0, 2))/(np.power(r0, 2)) + 
+                                   (np.power(region.PCA_1, 2))/(np.power(r1, 2)) +
+                                   (np.power(region.PCA_2, 2))/(np.power(r2, 2)))<=1]
+
+            region_count = within_region.count()
+            real_region_count[i] = region_count
 
     return art_region_count, art_region_count_std, real_region_count
 
