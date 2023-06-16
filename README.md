@@ -7,10 +7,13 @@ If you use this code, please cite
 
 ```
 @article{lovdal2022substructure,
-  title={Substructure in the stellar halo near the Sun. I. Data-driven clustering in Integrals of Motion space},
+  title={Substructure in the stellar halo near the Sun-I. Data-driven clustering in integrals-of-motion space},
   author={L{\"o}vdal, S Sofie and Ruiz-Lara, Tom{\'a}s and Koppelman, Helmer H and Matsuno, Tadafumi and Dodd, Emma and Helmi, Amina},
-  journal={arXiv preprint arXiv:2201.02404},
-  year={2022}
+  journal={Astronomy \& Astrophysics},
+  volume={665},
+  pages={A57},
+  year={2022},
+  publisher={EDP Sciences}
 }
 ```
 
