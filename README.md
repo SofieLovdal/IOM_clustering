@@ -17,9 +17,9 @@ If you use this code, please cite
 More information can also be found in this paper.
 	
 ## Setup
-The dependency Vaex 4.16 requires version 3.9 or 3.10 of Python
-A minimum working example is runnable with Jupyter notebook by cloning this repository
-You can install the necessary dependencies with pip install -r requirements.txt
+The dependency Vaex 4.16 requires version 3.9 or 3.10 of Python. 
+A minimum working example is runnable with Jupyter notebook by cloning this repository. 
+You can install the necessary dependencies with pip install -r requirements.txt 
 
 ## Parameters
 The parameters used in Lovdal et al. (2022) are
